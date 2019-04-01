@@ -1,6 +1,9 @@
 ls8/ls8
 ls8/ls8.exe
 
+# IDE generated
+.vscode
+
 # Prerequisites
 *.d
 
