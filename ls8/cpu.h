@@ -1,12 +1,20 @@
 #ifndef _CPU_H_
 #define _CPU_H_
 
+#define MASK_BYTE 0xFF
+#define CMP_FLAG_EQUAL 0b00000001
+#define CMP_FLAG_GREATER 0b00000010
+#define CMP_FLAG_LESS 0b00000100
+
 // Holds all information about the CPU
 struct cpu {
-  // TODO
-  // PC
-  // registers (array)
-  // ram (array)
+    unsigned char PC;
+    unsigned char IR;
+    unsigned char MAR;
+    unsigned char MDR;
+    unsigned char FL;
+    unsigned char *registers;
+    unsigned char *ram;
 };
 
 // ALU operations
