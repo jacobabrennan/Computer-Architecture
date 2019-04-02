@@ -71,3 +71,19 @@ void cpu_init(struct cpu *cpu)
     cpu->registers = calloc(8, sizeof(char));
     cpu->ram = calloc(0xFF, sizeof(char));
 }
+
+/**
+ * Read from CPU RAM
+ */
+unsigned char cpu_ram_read(struct cpu *cpu, unsigned char address)
+{
+    return cpu->ram[address];
+}
+
+/**
+ * Write to CPU RAM
+ */
+void cpu_ram_read(struct cpu *cpu, unsigned char address, unsigned char value)
+{
+    cpu->ram[address] = value;
+}
