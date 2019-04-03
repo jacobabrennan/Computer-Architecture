@@ -9,6 +9,8 @@
 #define CMP_FLAG_EQUAL 0b00000001
 #define CMP_FLAG_GREATER 0b00000010
 #define CMP_FLAG_LESS 0b00000100
+#define STACK_START 0xf4
+#define REGISTER_STACK 7
 
 // Holds all information about the CPU
 struct cpu {

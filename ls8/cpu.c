@@ -105,7 +105,8 @@ void cpu_init(struct cpu *cpu)
     cpu->MDR = 0;
     cpu->FL = 0;
     cpu->registers = calloc(8, sizeof(char));
-    cpu->ram = calloc(0xFF, sizeof(char));
+    cpu->ram = calloc(0x100, sizeof(char));
+    cpu->registers[REGISTER_STACK] = STACK_START;
 }
 
 /**

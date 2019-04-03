@@ -17,26 +17,26 @@ void unload_operations()
 void load_operations()
 {
     operations_cpu = calloc(0x100, sizeof(operation));
-    // operations[0x00] = op_00_NOP;
+    // operations_cpu[0x00] = op_00_NOP;
     operations_cpu[0x01] = op_01_HLT;
-    // operations[0x45] = op_45_PUSH;
-    // operations[0x46] = op_46_POP;
+    operations_cpu[0x45] = op_45_PUSH;
+    operations_cpu[0x46] = op_46_POP;
     operations_cpu[0x47] = op_47_PRN;
     operations_cpu[0x82] = op_82_LDI;
-    // operations[0x83] = op_83_LD;
-    // operations[0x84] = op_84_ST;
+    // operations_cpu[0x83] = op_83_LD;
+    // operations_cpu[0x84] = op_84_ST;
 
-    // operations[0x11] = op_11_RET;
-    // operations[0x13] = op_13_IRET;
-    // operations[0x50] = op_50_CALL;
-    // operations[0x52] = op_52_INT;
-    // operations[0x54] = op_54_JMP;
-    // operations[0x55] = op_55_JEQ;
-    // operations[0x56] = op_56_JNE;
-    // operations[0x57] = op_57_JGT;
-    // operations[0x58] = op_58_JLT;
-    // operations[0x59] = op_59_JLE;
-    // operations[0x5a] = op_5a_JGE;
+    // operations_cpu[0x11] = op_11_RET;
+    // operations_cpu[0x13] = op_13_IRET;
+    // operations_cpu[0x50] = op_50_CALL;
+    // operations_cpu[0x52] = op_52_INT;
+    // operations_cpu[0x54] = op_54_JMP;
+    // operations_cpu[0x55] = op_55_JEQ;
+    // operations_cpu[0x56] = op_56_JNE;
+    // operations_cpu[0x57] = op_57_JGT;
+    // operations_cpu[0x58] = op_58_JLT;
+    // operations_cpu[0x59] = op_59_JLE;
+    // operations_cpu[0x5a] = op_5a_JGE;
 
     operations_alu = calloc(0x10, sizeof(operation));
     // operations_alu[0x0] = op_a0_ADD;
@@ -66,8 +66,18 @@ void op_01_HLT(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
 }
 // operations[0x11] = op_11_RET;
 // operations[0x13] = op_13_IRET;
-// operations[0x45] = op_45_PUSH;
-// operations[0x46] = op_46_POP;
+void op_45_PUSH(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    (void)(operand_2);
+    cpu->registers[REGISTER_STACK]--;
+    cpu->ram[cpu->registers[REGISTER_STACK]] = cpu->registers[operand_1];
+}
+void op_46_POP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    (void)(operand_2);
+    cpu->registers[operand_1] = cpu->ram[cpu->registers[REGISTER_STACK]];
+    cpu->registers[REGISTER_STACK]++;
+}
 void op_47_PRN(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
     (void)(operand_2);
