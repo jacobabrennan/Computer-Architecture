@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <stdio.h>
 #include "cpu.h"
 #include "operations.h"
 
@@ -47,6 +49,7 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
 void cpu_run(struct cpu *cpu)
 {
     int running = 1; // True until we get a HLT instruction
+    operation *operations = load_operations();
 
     while (running) {
         // TODO
@@ -62,10 +65,19 @@ void cpu_run(struct cpu *cpu)
         // of RAM as reserved, so any such attempt to read would already be an
         // error.
         // 4. switch() over it to decide on a course of action.
-
+        operation instruction = operations[cpu->IR];
+        if(NULL == instruction)
+        {
+            fprintf(stderr, "ERROR Unknown unstruction: %d", cpu->IR);
+            exit(1);
+        }
         // 5. Do whatever the instruction should do according to the spec.
+        instruction(cpu, operand_1, operand_2);
         // 6. Move the PC to the next instruction.
+        cpu->PC += (1 + count_operand);
     }
+
+    unload_operations(operations);
 }
 
 /**
@@ -93,7 +105,7 @@ unsigned char cpu_ram_read(struct cpu *cpu, unsigned char address)
 /**
  * Write to CPU RAM
  */
-void cpu_ram_read(struct cpu *cpu, unsigned char address, unsigned char value)
+void cpu_ram_write(struct cpu *cpu, unsigned char address, unsigned char value)
 {
     cpu->ram[address] = value;
 }

@@ -38,5 +38,7 @@ enum alu_op {
 extern void cpu_load(struct cpu *cpu);
 extern void cpu_init(struct cpu *cpu);
 extern void cpu_run(struct cpu *cpu);
+unsigned char cpu_ram_read(struct cpu *cpu, unsigned char address);
+void cpu_ram_write(struct cpu *cpu, unsigned char address, unsigned char value);
 
 #endif

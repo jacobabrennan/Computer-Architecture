@@ -1,41 +1,44 @@
 #ifndef _OPERATIONS_H_
 #define _OPERATIONS_H_
 
+#include "cpu.h"
+
 typedef void (*operation)(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 
+void unload_operations(operation *operations);
 operation *load_operations();
-operation op_00_NOP;
-operation op_01_HLT;
-operation op_11_RET;
-operation op_13_IRET;
-operation op_45_PUSH;
-operation op_46_POP;
-operation op_47_PRN;
-operation op_50_CALL;
-operation op_52_INT;
-operation op_54_JMP;
-operation op_55_JEQ;
-operation op_56_JNE;
-operation op_57_JGT;
-operation op_58_JLT;
-operation op_59_JLE;
-operation op_5a_JGE;
-operation op_65_INC;
-operation op_66_DEC;
-operation op_69_NOT;
-operation op_82_LDI;
-operation op_83_LD;
-operation op_84_ST;
-operation op_a0_ADD;
-operation op_a1_SUB;
-operation op_a2_MUL;
-operation op_a3_DIV;
-operation op_a4_MOD;
-operation op_a7_CMP;
-operation op_a8_AND;
-operation op_aa_OR;
-operation op_ab_XOR;
-operation op_ac_SHL;
-operation op_ad_SHR;
+void op_00_NOP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_01_HLT(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_11_RET(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_13_IRET(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_45_PUSH(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_46_POP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_47_PRN(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_50_CALL(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_52_INT(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_54_JMP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_55_JEQ(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_56_JNE(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_57_JGT(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_58_JLT(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_59_JLE(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_5a_JGE(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_65_INC(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_66_DEC(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_69_NOT(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_82_LDI(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_83_LD(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_84_ST(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_a0_ADD(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_a1_SUB(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_a2_MUL(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_a3_DIV(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_a4_MOD(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_a7_CMP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_a8_AND(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_aa_OR(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_ab_XOR(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_ac_SHL(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_ad_SHR(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 
 #endif
