@@ -8,25 +8,30 @@
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
  */
-void cpu_load(struct cpu *cpu)
+void cpu_load(struct cpu *cpu, char *path_program)
 {
-  char data[DATA_LEN] = {
-    // From print8.ls8
-    0b10000010, // LDI R0,8
-    0b00000000,
-    0b00001000,
-    0b01000111, // PRN R0
-    0b00000000,
-    0b00000001  // HLT
-  };
-
-  int address = 0;
-
-  for (int i = 0; i < DATA_LEN; i++) {
-    cpu->ram[address++] = data[i];
-  }
-
-  // TODO: Replace this with something less hard-coded
+    //
+    FILE *program = fopen(path_program, "r");
+    //
+    if(NULL == program)
+    {
+        fprintf(stderr, "Could not find file: %s", path_program);
+        exit(1);
+    }
+    //
+    int address = 0;
+    char line[0x100];
+    while(fgets(line, 0x100, program))
+    {
+        char *index_error;
+        unsigned char instruction = strtoul(line, &index_error, 2);
+        if(line == index_error)
+        {
+            continue;
+        }
+        cpu->ram[address] = instruction;
+        address++;
+    }
 }
 
 /**
