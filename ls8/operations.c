@@ -77,21 +77,21 @@ void op_11_RET(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
 {
     (void)(operand_1);
     (void)(operand_2);
-    cpu->PC = cpu->ram[cpu->registers[REGISTER_STACK]];
-    cpu->registers[REGISTER_STACK]++;
+    cpu->PC = cpu->ram[cpu->registers[REGISTER_STACK_POINTER]];
+    cpu->registers[REGISTER_STACK_POINTER]++;
 }
 // operations[0x13] = op_13_IRET;
 void op_45_PUSH(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
     (void)(operand_2);
-    cpu->registers[REGISTER_STACK]--;
-    cpu->ram[cpu->registers[REGISTER_STACK]] = cpu->registers[operand_1];
+    cpu->registers[REGISTER_STACK_POINTER]--;
+    cpu->ram[cpu->registers[REGISTER_STACK_POINTER]] = cpu->registers[operand_1];
 }
 void op_46_POP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
     (void)(operand_2);
-    cpu->registers[operand_1] = cpu->ram[cpu->registers[REGISTER_STACK]];
-    cpu->registers[REGISTER_STACK] = (cpu->registers[REGISTER_STACK]+1) & BYTE;
+    cpu->registers[operand_1] = cpu->ram[cpu->registers[REGISTER_STACK_POINTER]];
+    cpu->registers[REGISTER_STACK_POINTER] = (cpu->registers[REGISTER_STACK_POINTER]+1) & BYTE;
 }
 void op_47_PRN(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
@@ -101,8 +101,8 @@ void op_47_PRN(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
 void op_50_CALL(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
     (void)(operand_2);
-    cpu->registers[REGISTER_STACK]--;
-    cpu->ram[cpu->registers[REGISTER_STACK]] = cpu->PC+2;
+    cpu->registers[REGISTER_STACK_POINTER]--;
+    cpu->ram[cpu->registers[REGISTER_STACK_POINTER]] = cpu->PC+2;
     cpu->PC = cpu->registers[operand_1];
 }
 // operations[0x52] = op_52_INT;
