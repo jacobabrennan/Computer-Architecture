@@ -17,7 +17,7 @@ void cpu_load(struct cpu *cpu, char *path_program)
     //
     if(NULL == program)
     {
-        fprintf(stderr, "Could not find file: %s", path_program);
+        fprintf(stderr, "\rCould not find file: %s", path_program);
         exit(1);
     }
     //
@@ -45,9 +45,9 @@ void alu(struct cpu *cpu, unsigned char op, unsigned char regA, unsigned char re
     operation instruction = operations_alu[op_identifier];
     if(NULL == instruction)
     {
-        fprintf(stderr, "Derp: %d\n", op_identifier);
-        fprintf(stderr, "ERROR Unknown ALU unstruction: %x\n", cpu->IR);
-        exit(1);
+        fprintf(stderr, "\rDerp: %d\n", op_identifier);
+        fprintf(stderr, "\rERROR Unknown ALU unstruction: %x\n", cpu->IR);
+        cpu->running = 0;
     }
     instruction(cpu, regA, regB);
 }
@@ -82,7 +82,8 @@ void cpu_run(struct cpu *cpu)
     {
         exit(1);
     }
-    unsigned char instruction_count = 0;
+    //
+    double long instruction_count = 0;
     if(cpu->running)
     {
         return;
@@ -153,13 +154,14 @@ void cpu_run(struct cpu *cpu)
         cpu->MAR = cpu->PC+2;
         cpu_ram_read(cpu);
         unsigned char operand_2 = cpu->MDR;
-        Sleep(25);
         instruction_count++;
-        if(0xff == instruction_count)
+        if(5000000 == instruction_count)
         {
-            printf("Encountered Infinit Loop");
+            printf("\rEncountered Infinit Loop");
             break;
         }
+        //printf("\r%x\n", cpu->IR);
+        //Sleep(10);
         // The above could be considered unsafe as it doesn't check if the
         // address is outside of addressable space. However, the last two bytes
         // of RAM as reserved, so any such attempt to read would already be an
@@ -176,8 +178,8 @@ void cpu_run(struct cpu *cpu)
             operation instruction = operations_cpu_jump[cpu->IR & INSTRUCTION_IDENTIFIER];
             if(NULL == instruction)
             {
-                fprintf(stderr, "ERROR Unknown Jump instruction: %x", cpu->IR);
-                exit(1);
+                fprintf(stderr, "\rERROR Unknown Jump instruction: %x", cpu->IR);
+                break;
             }
             instruction(cpu, operand_1, operand_2);
         }
@@ -186,8 +188,8 @@ void cpu_run(struct cpu *cpu)
             operation instruction = operations_cpu[cpu->IR & INSTRUCTION_IDENTIFIER];
             if(NULL == instruction)
             {
-                fprintf(stderr, "ERROR Unknown CPU instruction: %x", cpu->IR);
-                exit(1);
+                fprintf(stderr, "\rERROR Unknown CPU instruction: %x", cpu->IR);
+                break;
             }
             instruction(cpu, operand_1, operand_2);
             // 6. Move the PC to the next instruction.

@@ -23,7 +23,7 @@ void load_operations()
     operations_cpu[0x0] = op_00_NOP;
     operations_cpu[0x1] = op_01_HLT;
     operations_cpu[0x2] = op_82_LDI;
-    // operations_cpu[0x3] = op_83_LD;
+    operations_cpu[0x3] = op_83_LD;
     operations_cpu[0x4] = op_84_ST;
     operations_cpu[0x5] = op_45_PUSH;
     operations_cpu[0x6] = op_46_POP;
@@ -36,7 +36,7 @@ void load_operations()
     operations_cpu_jump[0x1] = op_11_RET;
     operations_cpu_jump[0x3] = op_13_IRET;
     operations_cpu_jump[0x4] = op_54_JMP;
-    // operations_cpu_jump[0x5] = op_55_JEQ;
+    operations_cpu_jump[0x5] = op_55_JEQ;
     // operations_cpu_jump[0x6] = op_56_JNE;
     // operations_cpu_jump[0x7] = op_57_JGT;
     // operations_cpu_jump[0x8] = op_58_JLT;
@@ -49,9 +49,9 @@ void load_operations()
     operations_alu[0x2] = op_a2_MUL;
     // operations_alu[0x3] = op_a3_DIV;
     // operations_alu[0x4] = op_a4_MOD;
-    // operations_alu[0x5] = op_65_INC;
-    // operations_alu[0x6] = op_66_DEC;
-    // operations_alu[0x7] = op_a7_CMP;
+    operations_alu[0x5] = op_65_INC;
+    operations_alu[0x6] = op_66_DEC;
+    operations_alu[0x7] = op_a7_CMP;
     // operations_alu[0x8] = op_a8_AND;
     // operations_alu[0x9] = op_69_NOT;
     // operations_alu[0xa] = op_aa_OR;
@@ -114,7 +114,7 @@ void op_46_POP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
 void op_47_PRN(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
     (void)(operand_2);
-    fprintf(stdout, "%d\n", cpu->registers[operand_1]);
+    fprintf(stdout, "\r%d\n", cpu->registers[operand_1]);
 }
 void op_48_PRA(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
@@ -135,20 +135,43 @@ void op_54_JMP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
     (void)(operand_2);
     cpu->PC = cpu->registers[operand_1];
 }
-// operations[0x55] = op_55_JEQ;
+void op_55_JEQ(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    (void)(operand_2);
+    if(cpu->FL & 0b00000001)
+    {
+        cpu->PC = cpu->registers[operand_1];
+    }
+    else
+    {
+        cpu->PC += 2;
+    }
+    
+}
 // operations[0x56] = op_56_JNE;
 // operations[0x57] = op_57_JGT;
 // operations[0x58] = op_58_JLT;
 // operations[0x59] = op_59_JLE;
 // operations[0x5a] = op_5a_JGE;
-// operations[0x65] = op_65_INC;
-// operations[0x66] = op_66_DEC;
+void op_65_INC(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    (void)(operand_2);
+    cpu->registers[operand_1] = BYTE & (cpu->registers[operand_1]+1);
+}
+void op_66_DEC(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    (void)(operand_2);
+    cpu->registers[operand_1] = BYTE & (cpu->registers[operand_1]-1);
+}
 // operations[0x69] = op_69_NOT;
 void op_82_LDI(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
     cpu->registers[operand_1] = operand_2;
 }
-// operations[0x83] = op_83_LD;
+void op_83_LD(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    cpu->registers[operand_1] = cpu->ram[cpu->registers[operand_2]];
+}
 void op_84_ST(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
     cpu->ram[cpu->registers[operand_1]] = cpu->registers[operand_2];
@@ -166,7 +189,21 @@ void op_a2_MUL(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
 }
 // operations[0xa3] = op_a3_DIV;
 // operations[0xa4] = op_a4_MOD;
-// operations[0xa7] = op_a7_CMP;
+void op_a7_CMP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    if(cpu->registers[operand_1] == cpu->registers[operand_2])
+    {
+        cpu->FL = 0b00000001; 
+    }
+    else if(cpu->registers[operand_1] >= cpu->registers[operand_2])
+    {
+        cpu->FL = 0b00000010;
+    }
+    else if(cpu->registers[operand_1] <= cpu->registers[operand_2])
+    {
+        cpu->FL = 0b00000100;
+    }
+}
 // operations[0xa8] = op_a8_AND;
 // operations[0xaa] = op_aa_OR;
 // operations[0xab] = op_ab_XOR;

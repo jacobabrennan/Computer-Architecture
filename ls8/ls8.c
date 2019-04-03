@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     //
     if(2 != argc)
     {
-        fprintf(stdout, "Usage: ls8 FilePath");
+        fprintf(stdout, "\rUsage: ls8 FilePath");
         exit(1);
     }
     char *file_path = argv[1];
