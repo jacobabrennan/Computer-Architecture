@@ -14,6 +14,7 @@ typedef void (*operation)(struct cpu *cpu, unsigned char operand_1, unsigned cha
 
 //-- Operation Array Memory Management ---------------
 extern operation *operations_cpu;
+extern operation *operations_cpu_jump;
 extern operation *operations_alu;
 void unload_operations();
 void load_operations();

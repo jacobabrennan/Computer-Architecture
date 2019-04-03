@@ -76,19 +76,30 @@ void cpu_run(struct cpu *cpu)
         if(cpu->IR & INSTRUCTION_ALU)
         {
             alu(cpu, cpu->IR, operand_1, operand_2);
+            cpu->PC += (1 + count_operand);
         }
-        else
+        else if(cpu->IR & INSTRUCTION_PC_MOVE)
         {
-            operation instruction = operations_cpu[cpu->IR];
+            operation instruction = operations_cpu_jump[cpu->IR & INSTRUCTION_IDENTIFIER];
             if(NULL == instruction)
             {
-                fprintf(stderr, "ERROR Unknown unstruction: %d", cpu->IR);
+                fprintf(stderr, "ERROR Unknown Jump instruction: %d", cpu->IR);
                 exit(1);
             }
             instruction(cpu, operand_1, operand_2);
         }
-        // 6. Move the PC to the next instruction.
-        cpu->PC += (1 + count_operand);
+        else
+        {
+            operation instruction = operations_cpu[cpu->IR & INSTRUCTION_IDENTIFIER];
+            if(NULL == instruction)
+            {
+                fprintf(stderr, "ERROR Unknown CPU instruction: %d", cpu->IR);
+                exit(1);
+            }
+            instruction(cpu, operand_1, operand_2);
+            // 6. Move the PC to the next instruction.
+            cpu->PC += (1 + count_operand);
+        }
     }
     //
     unload_operations();
