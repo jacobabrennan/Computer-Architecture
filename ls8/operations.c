@@ -20,11 +20,11 @@ void unload_operations()
 void load_operations()
 {
     operations_cpu = calloc(0x10, sizeof(operation));
-    // operations_cpu[0x0] = op_00_NOP;
+    operations_cpu[0x0] = op_00_NOP;
     operations_cpu[0x1] = op_01_HLT;
     operations_cpu[0x2] = op_82_LDI;
     // operations_cpu[0x3] = op_83_LD;
-    // operations_cpu[0x4] = op_84_ST;
+    operations_cpu[0x4] = op_84_ST;
     operations_cpu[0x5] = op_45_PUSH;
     operations_cpu[0x6] = op_46_POP;
     operations_cpu[0x7] = op_47_PRN;
@@ -60,7 +60,12 @@ void load_operations()
 }
 
 //-- Operation Handlers ------------------------------
-// operations[0x00] = op_00_NOP;
+void op_00_NOP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    (void)(cpu);
+    (void)(operand_1);
+    (void)(operand_2);   
+}
 void op_01_HLT(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
     (void)(cpu);
@@ -86,7 +91,7 @@ void op_46_POP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
 {
     (void)(operand_2);
     cpu->registers[operand_1] = cpu->ram[cpu->registers[REGISTER_STACK]];
-    cpu->registers[REGISTER_STACK]++;
+    cpu->registers[REGISTER_STACK] = (cpu->registers[REGISTER_STACK]+1) & BYTE;
 }
 void op_47_PRN(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
@@ -116,7 +121,10 @@ void op_82_LDI(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
     cpu->registers[operand_1] = operand_2;
 }
 // operations[0x83] = op_83_LD;
-// operations[0x84] = op_84_ST;
+void op_84_ST(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    cpu->ram[cpu->registers[operand_1]] = cpu->registers[operand_2];
+}
 void op_a0_ADD(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
     unsigned char result = BYTE & (cpu->registers[operand_1] + cpu->registers[operand_2]);
