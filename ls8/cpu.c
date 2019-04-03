@@ -1,7 +1,8 @@
 #include <windows.h>
-
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <termios.h>
 #include <time.h>
 #include "cpu.h"
 #include "operations.h"
@@ -66,6 +67,21 @@ void timer_advance(struct cpu *cpu, struct timespec *time_current)
  */
 void cpu_run(struct cpu *cpu)
 {
+    struct termios termios_p;
+    int success = tcgetattr(0, &termios_p);
+    if(0 != success)
+    {
+        exit(1);
+    }
+    struct termios termios_sane = termios_p;
+    cfmakeraw(&termios_p);
+    termios_p.c_cc[VMIN] = 0;
+    termios_p.c_cc[VTIME] = 0;
+    success = tcsetattr(0, TCSANOW, &termios_p);
+    if(0 != success)
+    {
+        exit(1);
+    }
     unsigned char instruction_count = 0;
     if(cpu->running)
     {
@@ -78,6 +94,16 @@ void cpu_run(struct cpu *cpu)
     cpu->running = 1; // True until we get a HLT instruction
     while(cpu->running)
     {
+        // Keyboard Interrupt
+        char keyboard_input;
+        int success_read = read(0, &keyboard_input, 1);
+        if(success_read != -1)
+        {
+            cpu->MAR = 0xf4;
+            cpu->MDR = keyboard_input;
+            cpu_ram_write(cpu);
+            cpu->registers[REGISTER_INTERRUPT_STATUS] |= 0b00000010;
+        }
         //
         timer_advance(cpu, &time_current);
         // Prior to instruction fetch, the following steps occur:
@@ -127,12 +153,12 @@ void cpu_run(struct cpu *cpu)
         cpu->MAR = cpu->PC+2;
         cpu_ram_read(cpu);
         unsigned char operand_2 = cpu->MDR;
-        Sleep(75);
+        Sleep(25);
         instruction_count++;
         if(0xff == instruction_count)
         {
             printf("Encountered Infinit Loop");
-            exit(1);
+            break;
         }
         // The above could be considered unsafe as it doesn't check if the
         // address is outside of addressable space. However, the last two bytes
@@ -168,6 +194,7 @@ void cpu_run(struct cpu *cpu)
             cpu->PC += (1 + count_operand);
         }
     }
+    success = tcsetattr(0, TCSANOW, &termios_sane);
 }
 
 /**
