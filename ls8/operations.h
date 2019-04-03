@@ -1,12 +1,24 @@
+
+
+//== Operations (Op Codes) ====================================================
+
+//-- Run Once (see end of file) ----------------------
 #ifndef _OPERATIONS_H_
 #define _OPERATIONS_H_
 
+//-- Dependencies ------------------------------------
 #include "cpu.h"
 
+//-- Operation definition (function pointer) ---------
 typedef void (*operation)(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 
-void unload_operations(operation *operations);
-operation *load_operations();
+//-- Operation Array Memory Management ---------------
+extern operation *operations_cpu;
+extern operation *operations_alu;
+void unload_operations();
+void load_operations();
+
+//-- Operation Handler Declarations ------------------
 void op_00_NOP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 void op_01_HLT(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 void op_11_RET(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
@@ -41,4 +53,5 @@ void op_ab_XOR(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
 void op_ac_SHL(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 void op_ad_SHR(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 
+//-- Run Once ----------------------------------------
 #endif

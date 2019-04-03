@@ -37,15 +37,17 @@ void cpu_load(struct cpu *cpu, char *path_program)
 /**
  * ALU
  */
-void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB)
+void alu(struct cpu *cpu, unsigned char op, unsigned char regA, unsigned char regB)
 {
-  switch (op) {
-    case ALU_MUL:
-      // TODO
-      break;
-
-    // TODO: implement more ALU ops
-  }
+    unsigned char op_identifier = op & INSTRUCTION_IDENTIFIER;
+    operation instruction = operations_alu[op_identifier];
+    if(NULL == instruction)
+    {
+        fprintf(stderr, "Derp: %d\n", op_identifier);
+        fprintf(stderr, "ERROR Unknown ALU unstruction: %d\n", cpu->IR);
+        exit(1);
+    }
+    instruction(cpu, regA, regB);
 }
 
 /**
@@ -54,8 +56,8 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
 void cpu_run(struct cpu *cpu)
 {
     int running = 1; // True until we get a HLT instruction
-    operation *operations = load_operations();
-
+    load_operations();
+    //
     while (running) {
         // TODO
         // 1. Get the value of the current instruction (in address PC).
@@ -70,19 +72,26 @@ void cpu_run(struct cpu *cpu)
         // of RAM as reserved, so any such attempt to read would already be an
         // error.
         // 4. switch() over it to decide on a course of action.
-        operation instruction = operations[cpu->IR];
-        if(NULL == instruction)
-        {
-            fprintf(stderr, "ERROR Unknown unstruction: %d", cpu->IR);
-            exit(1);
-        }
         // 5. Do whatever the instruction should do according to the spec.
-        instruction(cpu, operand_1, operand_2);
+        if(cpu->IR & INSTRUCTION_ALU)
+        {
+            alu(cpu, cpu->IR, operand_1, operand_2);
+        }
+        else
+        {
+            operation instruction = operations_cpu[cpu->IR];
+            if(NULL == instruction)
+            {
+                fprintf(stderr, "ERROR Unknown unstruction: %d", cpu->IR);
+                exit(1);
+            }
+            instruction(cpu, operand_1, operand_2);
+        }
         // 6. Move the PC to the next instruction.
         cpu->PC += (1 + count_operand);
     }
-
-    unload_operations(operations);
+    //
+    unload_operations();
 }
 
 /**
