@@ -27,6 +27,7 @@ void op_13_IRET(struct cpu *cpu, unsigned char operand_1, unsigned char operand_
 void op_45_PUSH(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 void op_46_POP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 void op_47_PRN(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
+void op_48_PRA(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 void op_50_CALL(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 void op_52_INT(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 void op_54_JMP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);

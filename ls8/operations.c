@@ -28,13 +28,14 @@ void load_operations()
     operations_cpu[0x5] = op_45_PUSH;
     operations_cpu[0x6] = op_46_POP;
     operations_cpu[0x7] = op_47_PRN;
+    operations_cpu[0x8] = op_48_PRA;
 
     operations_cpu_jump = calloc(0x10, sizeof(operation));
     operations_cpu_jump[0x0] = op_50_CALL;
     // operations_cpu_jump[0x2] = op_52_INT;
     operations_cpu_jump[0x1] = op_11_RET;
-    // operations_cpu_jump[0x3] = op_13_IRET;
-    // operations_cpu_jump[0x4] = op_54_JMP;
+    operations_cpu_jump[0x3] = op_13_IRET;
+    operations_cpu_jump[0x4] = op_54_JMP;
     // operations_cpu_jump[0x5] = op_55_JEQ;
     // operations_cpu_jump[0x6] = op_56_JNE;
     // operations_cpu_jump[0x7] = op_57_JGT;
@@ -68,10 +69,9 @@ void op_00_NOP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
 }
 void op_01_HLT(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
-    (void)(cpu);
     (void)(operand_1);
     (void)(operand_2);
-    exit(0);
+    cpu->running = 0;
 }
 void op_11_RET(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
@@ -80,7 +80,25 @@ void op_11_RET(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
     cpu->PC = cpu->ram[cpu->registers[REGISTER_STACK_POINTER]];
     cpu->registers[REGISTER_STACK_POINTER]++;
 }
-// operations[0x13] = op_13_IRET;
+void op_13_IRET(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    (void)(operand_1);
+    (void)(operand_2);
+    // The following steps are executed:
+    // Registers R6-R0 are popped off the stack in that order.
+    for(int index_register=REGISTER_INTERRUPT_STATUS-1; index_register >= 0; index_register--)
+    {
+        op_46_POP(cpu, index_register, 0);
+    }
+    // The FL register is popped off the stack.
+    cpu->FL = cpu->ram[cpu->registers[REGISTER_STACK_POINTER]];
+    cpu->registers[REGISTER_STACK_POINTER] = (cpu->registers[REGISTER_STACK_POINTER]+1) & BYTE;
+    // The return address is popped off the stack and stored in PC.
+    cpu->PC = cpu->ram[cpu->registers[REGISTER_STACK_POINTER]];
+    cpu->registers[REGISTER_STACK_POINTER] = (cpu->registers[REGISTER_STACK_POINTER]+1) & BYTE;
+    // Interrupts are re-enabled
+    cpu->interruptable = 1;
+}
 void op_45_PUSH(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
     (void)(operand_2);
@@ -98,6 +116,11 @@ void op_47_PRN(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
     (void)(operand_2);
     fprintf(stdout, "%d\n", cpu->registers[operand_1]);
 }
+void op_48_PRA(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    (void)(operand_2);
+    fprintf(stdout, "%c\n", cpu->registers[operand_1]);
+}
 void op_50_CALL(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
 {
     (void)(operand_2);
@@ -106,7 +129,11 @@ void op_50_CALL(struct cpu *cpu, unsigned char operand_1, unsigned char operand_
     cpu->PC = cpu->registers[operand_1];
 }
 // operations[0x52] = op_52_INT;
-// operations[0x54] = op_54_JMP;
+void op_54_JMP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    (void)(operand_2);
+    cpu->PC = cpu->registers[operand_1];
+}
 // operations[0x55] = op_55_JEQ;
 // operations[0x56] = op_56_JNE;
 // operations[0x57] = op_57_JGT;

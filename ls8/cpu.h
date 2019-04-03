@@ -10,8 +10,10 @@
 #define CMP_FLAG_GREATER 0b00000010
 #define CMP_FLAG_LESS 0b00000100
 #define STACK_START 0xf4
-#define REGISTER_STACK_POINTER 7
+#define INTERRUPT_START 0xf8
+#define REGISTER_INTERRUPT_MASK 5
 #define REGISTER_INTERRUPT_STATUS 6
+#define REGISTER_STACK_POINTER 7
 
 // Holds all information about the CPU
 struct cpu {
@@ -22,12 +24,16 @@ struct cpu {
     unsigned char FL;
     unsigned char *registers;
     unsigned char *ram;
+    //
+    unsigned char running;
+    unsigned char interruptable;
 };
 
 // Function declarations
 
 extern void cpu_load(struct cpu *cpu, char *file_path);
 extern void cpu_init(struct cpu *cpu);
+extern void cpu_cleanup(struct cpu *cpu);
 extern void cpu_run(struct cpu *cpu);
 void cpu_ram_read(struct cpu *cpu);
 void cpu_ram_write(struct cpu *cpu);

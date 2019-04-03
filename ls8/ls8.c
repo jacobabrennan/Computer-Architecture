@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     cpu_init(&cpu);
     cpu_load(&cpu, file_path);
     cpu_run(&cpu);
+    cpu_cleanup(&cpu);
     //
     return 0;
 }
