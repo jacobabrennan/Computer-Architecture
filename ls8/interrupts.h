@@ -9,7 +9,7 @@
     following arguments:
         *cpu: The CPU to generate interrupts on
         *time_current: A struct returned by clock_gettime()
-    */
+*/
 
 //-- Dependencies ------------------------------------
 #include <time.h>

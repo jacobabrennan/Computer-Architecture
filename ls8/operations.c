@@ -55,8 +55,8 @@ void load_operations()
         operations_cpu_jump[0x4] = op_54_JMP;
         operations_cpu_jump[0x5] = op_55_JEQ;
         // operations_cpu_jump[0x6] = op_56_JNE;
-        // operations_cpu_jump[0x7] = op_57_JGT;
-        // operations_cpu_jump[0x8] = op_58_JLT;
+        operations_cpu_jump[0x7] = op_57_JGT;
+        operations_cpu_jump[0x8] = op_58_JLT;
         // operations_cpu_jump[0x9] = op_59_JLE;
         // operations_cpu_jump[0xa] = op_5a_JGE;
     }
@@ -76,7 +76,7 @@ void load_operations()
         // operations_alu[0x9] = op_69_NOT;
         // operations_alu[0xa] = op_aa_OR;
         // operations_alu[0xb] = op_ab_XOR;
-        // operations_alu[0xc] = op_ac_SHL;
+        operations_alu[0xc] = op_ac_SHL;
         // operations_alu[0xd] = op_ad_SHR;
     }
 }
@@ -197,17 +197,40 @@ void op_55_JEQ(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
     {
         cpu->PC += 2;
     }
-    
 }
 
 //-- JNE: Jump to register value, if not equal -------
 // operations[0x56] = op_56_JNE;
 
 //-- JGT: Jump to register value, if greater than ----
-// operations[0x57] = op_57_JGT;
+void op_57_JGT(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    (void)(operand_2);
+    if(cpu->FL & CMP_FLAG_GREATER)
+    {
+        cpu->PC = cpu->registers[operand_1];
+    }
+    else
+    {
+        cpu->PC += 2;
+    }
+    
+}
 
 //-- JLT: Jump to register value, if less than -------
-// operations[0x58] = op_58_JLT;
+void op_58_JLT(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    (void)(operand_2);
+    if(cpu->FL & CMP_FLAG_LESS)
+    {
+        cpu->PC = cpu->registers[operand_1];
+    }
+    else
+    {
+        cpu->PC += 2;
+    }
+    
+}
 
 //-- JLE: Jump to register value, if less or equal ---
 // operations[0x59] = op_59_JLE;
@@ -300,7 +323,10 @@ void op_a7_CMP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2
 // operations[0xab] = op_ab_XOR;
 
 //-- SHL: Left shift bits on reg.A by reg.B ----------
-// operations[0xac] = op_ac_SHL;
+void op_ac_SHL(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2)
+{
+    cpu->registers[operand_1] = BYTE & (cpu->registers[operand_1] << cpu->registers[operand_2]);
+}
 
-//-- SHL: Right shift bits on reg.A by reg.B ---------
+//-- SHR: Right shift bits on reg.A by reg.B ---------
 // operations[0xad] = op_ad_SHR;
