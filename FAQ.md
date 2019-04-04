@@ -336,9 +336,9 @@ void trace(struct cpu *cpu)
     printf("%02X | ", cpu->PC);
 
     printf("%02X %02X %02X |",
-        cpu_ram_read(cpu, cpu->PC),
-        cpu_ram_read(cpu, cpu->PC + 1),
-        cpu_ram_read(cpu, cpu->PC + 2));
+        ram_read(cpu, cpu->PC),
+        ram_read(cpu, cpu->PC + 1),
+        ram_read(cpu, cpu->PC + 2));
 
     for (int i = 0; i < 8; i++) {
         printf(" %02X", cpu->reg[i]);

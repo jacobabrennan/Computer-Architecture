@@ -1,6 +1,11 @@
 
 
 //== Operations (Op Codes) ====================================================
+/*
+    This module defines functions to handle the instructions defined by the LS8
+    specification. It also provides functions to place those handlers into
+    arrays, indexed by op code.
+*/
 
 //-- Run Once (see end of file) ----------------------
 #ifndef _OPERATIONS_H_
@@ -9,17 +14,42 @@
 //-- Dependencies ------------------------------------
 #include "cpu.h"
 
-//-- Operation definition (function pointer) ---------
-typedef void (*operation)(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 
-//-- Operation Array Memory Management ---------------
+//== Operation Array Memory Management ========================================
+/*
+    This section defines some variables to be exported, and two functions to
+    allocate and free memory for those variables.
+    
+    The variables are arrays of pointers to functions used to handle CPU or ALU
+    instructions (op codes).
+    
+    The function load_operations will also load all function pointers into the
+    arrays.
+*/
+
+//-- Variables to be exported ------------------------
+typedef void (*operation)(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 extern operation *operations_cpu;
 extern operation *operations_cpu_jump;
 extern operation *operations_alu;
+
+//-- Memory freeing function -------------------------
 void unload_operations();
+
+//-- Memory allocation and setup function ------------
 void load_operations();
 
-//-- Operation Handler Declarations ------------------
+
+//== Operation Handler Declarations ===========================================
+/*
+    The following are functions handlers for each of the instructions in the
+    LS8 instruction set.
+    
+    All the handlers have the same signature, but not all of them use both
+    operands. Where an operand is unused, any unsigned char can be passed, but
+    a 0 value should be used to avoid confusion.
+*/
+
 void op_00_NOP(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 void op_01_HLT(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
 void op_11_RET(struct cpu *cpu, unsigned char operand_1, unsigned char operand_2);
