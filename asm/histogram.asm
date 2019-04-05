@@ -12,7 +12,7 @@
 ; R2: Where to jump to next
 ; R3: Values for comparison
 ; R4: The * character
-; R5: The \n character
+; R5: Other characters for printing
 
 Main:
     ; Initialize Values
