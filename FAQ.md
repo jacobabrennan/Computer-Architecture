@@ -1,4 +1,23 @@
 # Computer Architecture FAQ
+
+<!-- ============================================================================= -->
+
+<p><details><summary><b>How much of the emulator do I need to implement?</b></summary><p>
+
+As little as possible to get a particular LS-8 program running.
+
+Add features incrementally. Once `print8.ls8` is working, then add a `MULT`
+instruction to get `mult.ls8` running. And so on.
+
+Of course, you're _allowed_ to implement as many instructions are you'd like.
+
+This goes for individual components like registers, as well. Do you need to
+implement the `FL` register? If you want to use any functionality that depends
+on it, then yes. The spec will tell you if the thing you're implementing needs
+the `FL` register to work.
+
+</p></details></p>
+
 <!-- ============================================================================= -->
 
 <p><details><summary><b>Once we get the <tt>HLT</tt> instruction, what should the emulator do?</b></summary><p>
@@ -132,8 +151,24 @@ arbitrary nesting level. Indeed, it is what allows for recursion at all.
 It's a special purpose register that can be added separately to the `struct cpu`
 similar to how `PC` works.
 
+In `struct cpu`, it's convenient to have an array to store `R0` through `R7`,
+but the other registers are just fields in the `struct`.
+
 </p></details></p>
 
+<!-- ============================================================================= -->
+
+<p><details><summary><b>What about the <tt>IR</tt>, <tt>MAR</tt>, and <tt>MDR</tt> registers?</b></summary><p>
+
+You can store those special-purpose registers similar to how `PC` and `FL` are
+stored in the `struct`.
+
+...Or, if you're not using them in any place except a single function, maybe
+they can be locals or function parameters.
+
+It's a matter of which way you think produces more readable code.
+
+</p></details></p>
 <!-- ============================================================================= -->
 
 <p><details><summary><b>What are the registers for, and what do they do?</b></summary><p>
@@ -301,9 +336,9 @@ void trace(struct cpu *cpu)
     printf("%02X | ", cpu->PC);
 
     printf("%02X %02X %02X |",
-        cpu_ram_read(cpu, cpu->PC),
-        cpu_ram_read(cpu, cpu->PC + 1),
-        cpu_ram_read(cpu, cpu->PC + 2));
+        ram_read(cpu, cpu->PC),
+        ram_read(cpu, cpu->PC + 1),
+        ram_read(cpu, cpu->PC + 2));
 
     for (int i = 0; i < 8; i++) {
         printf(" %02X", cpu->reg[i]);
@@ -510,9 +545,35 @@ changed from the value 7 to the value 2.
 
 </p></details></p>
 
-<!--
+<!-- ============================================================================= -->
 
+<p><details><summary><b>What is the difference between general-purpose registers and internal, special-purpose registers?</b></summary><p>
+
+The general-purpose registers are `R0` through `R7`.
+
+Special-purpose registers are things like `PC`, `FL`, and maybe `IR`, `MAR`, and
+`MDR`.
+
+The main difference is this: general-purpose registers can be used directly by
+instructions. Special-purpose registers cannot.
+
+```assembly
+LDI R0,4   ; Valid
+LDI PC,5   ; INVALID--PC is not a general-purpose register
+
+ADD R0,R1  ; Valid
+ADD FL,R0  ; INVALID--FL is not a general-purpose register
+```
+
+In `struct cpu`, it's convenient to represent the general purpose registers with
+an array for easy indexing from `0` to `7`.
+
+</p></details></p>
+
+<!--
 TODO:
+Why allow a stack overflow at all?
+Why not use an LRU cache instead of a stack?
 -->
 
 <!-- ============================================================================= -->
